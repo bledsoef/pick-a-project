@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react"
-import { getBackend, getMobile, getType, getFrontend, getDatabase, getProject } from "@/viewmodel/ViewModel";
+import { getBackend, getMobile, getType, getFrontend, getDatabase, getProject } from "@/viewmodel/Getters";
 
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
