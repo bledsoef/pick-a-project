@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react"
+import { Waiting } from "./Waiting";
 import { getBackend, getMobile, getType, getFrontend, getDatabase, getProject } from "@/viewmodel/Getters";
 
 function sleep(ms) {
@@ -8,6 +9,16 @@ function sleep(ms) {
 
 export function Generator() {
     const randomize = async (e) => {
+        // choose the database to use
+        setProjectWaiting(true)
+        const projects = await getProject()
+
+        // wait to build suspense OOOO
+        await sleep(1000)
+        setProjectWaiting(false)
+        // show result
+
+        setProject(projects[Math.floor(Math.random() * projects.length)])
         // get the type of application we will be building
         setApplicationWaiting(true)
         const types = await getType()
@@ -64,17 +75,6 @@ export function Generator() {
         // show result
 
         setDatabase(databases[Math.floor(Math.random() * types.length)])
-
-        // choose the database to use
-        setProjectWaiting(true)
-        const projects = await getProject()
-
-        // wait to build suspense OOOO
-        await sleep(1000)
-        setProjectWaiting(false)
-        // show result
-
-        setProject(projects[Math.floor(Math.random() * types.length)])
     }
 
     const [application, setApplication] = useState("")
@@ -92,32 +92,64 @@ export function Generator() {
     const [projectWaiting, setProjectWaiting] = useState(false)
 
     return (
-      <div className="flex min-h-screen flex-col items-center justify-between p-24 w-full">
-        <p className=" text-2xl">Generate a project to build with a random framework, stack, and language to help break Finn!</p>
+      <div className="flex min-h-screen flex-col items-center p-10 w-3/4">
+        <p className=" text-2xl mb-10">Generate a project to build with a random framework, stack, and language to help break Finn!</p>
         
-        {!application && !applicationWaiting && <button onClick={randomize} className=" font-black drop-shadow-md text-5xl bg-blue-400 rounded-lg p-10">
+        {!project && !projectWaiting && <button onClick={randomize} className=" font-black drop-shadow-md text-5xl bg-blue-300 rounded-lg p-10">
             GENERATE
         </button>}
+        {projectWaiting && <Waiting text="Generating project information"/>}
+        {project && (
+          <div className=" bg-blue-300 rounded-lg p-4 m-3 w-full">
+            <p className="text-4xl font-bold">Project</p>
+            <p className="text-3xl "><strong>Name:</strong> {project.name}</p>
+            <p className="text-3xl "><strong>Description:</strong> {project.description}</p>
+          </div>
+        )}
+        {applicationWaiting && <Waiting text="Generating platform type"/>}
+        {application && (
+          <div className=" bg-blue-300 rounded-lg p-4 m-3 w-full">
+            <p className="text-4xl font-bold">Platform</p>
+            <p className="text-3xl "><strong>Type:</strong> {application}</p>
+          </div>
+        )}              
+        {mobileWaiting && <Waiting text="Generating mobile stack"/>}
+        {mobile && (
+          <div className=" bg-blue-300 rounded-lg p-4 m-3 w-full">
+            <p className="text-4xl font-bold">Mobile</p>
+            <p className="text-3xl "><strong>Device:</strong> {mobile.device}</p>
+            <p className="text-3xl "><strong>Language:</strong> {mobile.language}</p>
+            <p className="text-3xl "><strong>Framework:</strong> {mobile.framework}</p>
+          </div>
+        )}
+        
+        {frontendWaiting && <Waiting text="Generating frontend technologies"/>}
+        {frontend && (
+          <div className=" bg-blue-300 rounded-lg p-4 m-3 w-full">
+            <p className="text-4xl font-bold">Frontend</p>
+            <p className="text-3xl "><strong>Language:</strong> {frontend.language}</p>
+            <p className="text-3xl "><strong>Framework:</strong> {frontend.framework}</p>
+          </div>
+        )}
 
-        {applicationWaiting && <p className="text-5xl ">Generating application type...</p>}
-        {application && <p className="text-5xl ">{application}</p>}
-        
-        {mobileWaiting && <p className="text-5xl ">Generating mobile stack...</p>}
-        {mobile && <p className="text-5xl ">{mobile.device}/{mobile.language}/{mobile.framework}</p>}
-        
-        {frontendWaiting && <p className="text-5xl ">Generating frontend technologies...</p>}
-        {frontend && <p className="text-5xl ">{frontend.language}/{frontend.framework}</p>}
-        
-        {backendWaiting && <p className="text-5xl ">Generating backend technologies...</p>}
-        {backend && <p className="text-5xl ">{backend.language}/{backend.framework}</p>}
-        
-        {databaseWaiting && <p className="text-5xl ">Generating database...</p>}
-        {database && <p className="text-5xl ">{database.name}</p>}
-        
-        {projectWaiting && <p className="text-5xl ">Generating project description...</p>}
-        {project && <p className="text-5xl ">{project.description}</p>}
+        {backendWaiting && <Waiting text="Generating backend technologies"/>}
+        {backend && (
+          <div className=" bg-blue-300 rounded-lg p-4 m-3 w-full">
+            <p className="text-4xl font-bold">Backend</p>
+            <p className="text-3xl "><strong>Language:</strong> {backend.language}</p>
+            <p className="text-3xl "><strong>Framework:</strong> {backend.framework}</p>
+          </div>
+        )}
 
-        <p className=" text-2xl">If you don't know it, get to learning!</p>
+        
+        {databaseWaiting && <Waiting text="Generating database"/>}
+        {database && (
+          <div className=" bg-blue-300 rounded-lg p-4 m-3 w-full">
+            <p className="text-4xl font-bold">Database</p>
+            <p className="text-3xl "><strong>Name:</strong> {database.name}</p>
+          </div>
+        )}        
+
       </div>
     )
   }
